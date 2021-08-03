@@ -2,6 +2,7 @@
 
 namespace LumenQueueManager\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use LumenQueueManager\Models\Job;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -14,27 +15,48 @@ class QueueManagerController extends Controller
     {
         $this->checkForDatabaseQueue();
 
-        $jobs = Job::where('queue', 'default')->paginate(config('lumen-queue-manager.itemsPerPage', 10));
+        $queueInfos = Job::select('queue', DB::raw('count(queue) as numberOfJobs'))->groupBy('queue')->get()->toArray();
+        $queueSelectionOptions = [];
+        foreach($queueInfos as $queueInfo)
+        {
+            $queueSelectionOptions[$queueInfo['queue']] = $queueInfo['queue'] . ' (' . $queueInfo['numberOfJobs'] . ' items)';
+        }
 
-        return view('lumen-queue-manager::queue-manager/index', ['jobs' => $jobs]);
+        $currentQueue = $request->input('queue') ?? 'default';
+
+        $jobs = Job::where('queue', $currentQueue)->paginate(config('lumen-queue-manager.itemsPerPage', 10));
+
+        return view('lumen-queue-manager::queue-manager/index', [
+            'jobs' => $jobs,
+            'queueSelectionOptions' => $queueSelectionOptions,
+            'currentQueue' => $currentQueue,
+        ]);
     }
 
-    public function view($jobId) {
+    public function view(Request $request, $jobId) {
         $this->checkForDatabaseQueue();
 
         /** @var Job $job */
         $job = Job::whereId($jobId)->first();
 
-        return view('lumen-queue-manager::queue-manager/view', ['job' => $job]);
+        $currentQueue = $request->input('queue') ?? 'default';
+
+        return view('lumen-queue-manager::queue-manager/view', [
+            'job' => $job,
+            'currentQueue' => $currentQueue,
+        ]);
     }
 
-    public function delete($jobId)
+    public function delete(Request $request, $jobId)
     {
         $this->checkForDatabaseQueue();
 
         Job::whereId($jobId)->delete();
 
-        return redirect()->route('queue-manager-index');
+        $currentQueue = $request->input('queue') ?? 'default';
+        return redirect()->route('queue-manager-index', [
+            'queue' => $currentQueue,
+        ]);
     }
 
     protected function checkForDatabaseQueue()

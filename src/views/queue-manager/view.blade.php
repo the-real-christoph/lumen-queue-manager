@@ -3,7 +3,7 @@
 
     <div class="row">
         <div class="col-2">
-            <a href="/queue-manager/">Back to overview</a>
+            <a href="{{ route('queue-manager-index', ['queue' => $currentQueue]) }}">Back to overview</a>
         </div>
     </div>
     <div class="row">

@@ -1,4 +1,4 @@
-# Lumen Queue Manager [work in progress)]
+# Lumen Queue Manager [work in progress]
 
 Basic queue manager for database queues used in lumen framework.
 
@@ -7,10 +7,13 @@ Basic queue manager for database queues used in lumen framework.
 * Listing pending jobs and status
 * Detailed job view
 * Removal of pending jobs.
+* Filtering by database queue name
+
+![Preview](https://raw.githubusercontent.com/the-real-christoph/lumen-queue-manager/master/preview.png)
+
 
 ## Planned features (coming soon)
 * failed queue + retry feature
-* multi queue support
 * improved UI
 * any more ideas?
 

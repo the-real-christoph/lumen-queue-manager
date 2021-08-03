@@ -9,6 +9,23 @@
 </head>
 <body>
 <h1>Queue Manager</h1>
+@if (isset($queueSelectionOptions))
+<form method="get" action="/queue-manager/">
+    <div class="row">
+    <div class="col-8">
+        <select name="queue" class="form-select" aria-label="Default select example">
+            <option selected>Select Queue</option>
+            @foreach($queueSelectionOptions as $optionValue => $optionText)
+                <option value="{{$optionValue}}" {{ $optionValue==$currentQueue ? 'selected' : '' }}>{{$optionText}}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-4">
+        <button type="submit" class="btn btn-primary mb-3">Select queue</button>
+    </div>
+    </div>
+</form>
+@endif
 <hr/>
 {{ $slot }}
 </body>

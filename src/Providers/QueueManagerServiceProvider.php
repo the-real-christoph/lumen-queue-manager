@@ -24,14 +24,17 @@ class QueueManagerServiceProvider extends ServiceProvider
     public function boot()
     {
         $router = $this->app['router'];
-        $router->get('/queue-manager', ['uses' => 'LumenQueueManager\Http\Controllers\QueueManagerController@index', 'as' => 'queue-manager-index'])->namedRoutes;
-        $router->get('/queue-manager/view/{jobId}', 'LumenQueueManager\Http\Controllers\QueueManagerController@view');
-        $router->get('/queue-manager/delete/{jobId}', 'LumenQueueManager\Http\Controllers\QueueManagerController@delete');
-
-/*        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../../views' => $this->app->resourcePath('views/vendor/lumen-queue-manager'),
-            ], 'lumen-queue-manager');
-        }*/
+        $router->get('/queue-manager', [
+            'uses' => 'LumenQueueManager\Http\Controllers\QueueManagerController@index',
+            'as' => 'queue-manager-index'
+        ]);
+        $router->get('/queue-manager/view/{jobId}', [
+            'uses' => 'LumenQueueManager\Http\Controllers\QueueManagerController@view',
+            'as' => 'queue-manager-view'
+        ]);
+        $router->get('/queue-manager/delete/{jobId}', [
+            'uses' =>'LumenQueueManager\Http\Controllers\QueueManagerController@delete',
+            'as' => 'queue-manager-delete'
+        ]);
     }
 }

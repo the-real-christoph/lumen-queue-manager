@@ -1,5 +1,8 @@
-<x-lumen-queue-manager::layout>
+<x-lumen-queue-manager::layout :queueSelectionOptions="$queueSelectionOptions" :currentQueue="$currentQueue">
     <div class="container">
+        <div class="row">
+            <div class="col-12">Items in "{{ $currentQueue }}":</div>
+        </div>
         <div class="row">
             <div class="col-1">
                 #ID
@@ -34,10 +37,10 @@
                     {{ $job->attempts }}
                 </div>
                 <div class="col-1">
-                    <a href="/queue-manager/view/{{ $job->id }}">View</a>
+                    <a href="{{ route('queue-manager-view', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">View</a>
                 </div>
                 <div class="col-1">
-                    <a href="/queue-manager/delete/{{ $job->id }}">Delete</a>
+                    <a href="{{ route('queue-manager-delete', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">Delete</a>
                 </div>
             </div>
         @endforeach
@@ -62,6 +65,5 @@
             @endif
         </div>
     </div>
-
 
 </x-lumen-queue-manager::layout>
