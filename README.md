@@ -19,6 +19,17 @@ Basic queue manager for database queues used in lumen framework.
 
 ## Installation
 
+Add repository to your composer.json file (packagist.org submit will be done later)
+
+```
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/the-real-christoph/lumen-queue-manager"
+        }
+    ],
+```
+
 ```
 composer require the-real-christoph/lumen-queue-manager
 ```
