@@ -22,7 +22,7 @@ class QueueManagerController extends Controller
             $queueSelectionOptions[$queueInfo['queue']] = $queueInfo['queue'] . ' (' . $queueInfo['numberOfJobs'] . ' items)';
         }
 
-        $currentQueue = $request->input('queue') ?? 'default';
+        $currentQueue = $request->input('queue', 'default');
 
         $jobs = Job::where('queue', $currentQueue)->paginate(config('lumen-queue-manager.itemsPerPage', 10));
 
@@ -30,16 +30,23 @@ class QueueManagerController extends Controller
             'jobs' => $jobs,
             'queueSelectionOptions' => $queueSelectionOptions,
             'currentQueue' => $currentQueue,
+            'message' => $request->input('message', '')
         ]);
     }
 
     public function view(Request $request, $jobId) {
         $this->checkForDatabaseQueue();
+        $currentQueue = $request->input('queue', 'default');
 
         /** @var Job $job */
         $job = Job::whereId($jobId)->first();
-
-        $currentQueue = $request->input('queue') ?? 'default';
+        if(null === $job)
+        {
+            return redirect()->route('queue-manager-index', [
+                'queue' => $request->input('queue', 'default'),
+                'message' => "Job cannot be found, maybe it has been deleted or already worked away."
+            ]);
+        }
 
         return view('lumen-queue-manager::queue-manager/view', [
             'job' => $job,
@@ -53,7 +60,7 @@ class QueueManagerController extends Controller
 
         Job::whereId($jobId)->delete();
 
-        $currentQueue = $request->input('queue') ?? 'default';
+        $currentQueue = $request->input('queue', 'default');
         return redirect()->route('queue-manager-index', [
             'queue' => $currentQueue,
         ]);

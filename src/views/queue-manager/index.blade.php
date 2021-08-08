@@ -1,5 +1,10 @@
 <x-lumen-queue-manager::layout :queueSelectionOptions="$queueSelectionOptions" :currentQueue="$currentQueue">
     <div class="container">
+        @if (isset($message) && $message)
+            <div class="alert alert-warning" role="alert">
+                {{ $message }}
+            </div>
+        @endif
         <div class="row">
             <div class="col-12">Items in "{{ $currentQueue }}":</div>
         </div>
