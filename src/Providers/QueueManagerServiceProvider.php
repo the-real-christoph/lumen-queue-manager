@@ -2,6 +2,7 @@
 
 namespace LumenQueueManager\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -36,5 +37,7 @@ class QueueManagerServiceProvider extends ServiceProvider
             'uses' =>'LumenQueueManager\Http\Controllers\QueueManagerController@delete',
             'as' => 'queue-manager-delete'
         ]);
+
+        Paginator::useBootstrap();
     }
 }

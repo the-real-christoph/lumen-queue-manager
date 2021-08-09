@@ -51,23 +51,9 @@
         @endforeach
         <hr/>
         <div class="row">
-            <div class="col-3">
-                Showing {{ $jobs->count() }} of total {{ $jobs->total() }}
+            <div class="col">
+                {{ $jobs->links() }}
             </div>
-        </div>
-        <div class="row">
-            @if ($jobs->hasMorePages())
-                <div class="col-2">
-                    @if ($jobs->currentPage() > 1)
-                    <a href="{!! $jobs->previousPageUrl() !!}"><< Previous</a>
-                    @endif
-                </div>
-                <div class="col-8">
-                </div>
-                <div class="col-2">
-                    <a href="{!! $jobs->nextPageUrl() !!}">Next >></a>
-                </div>
-            @endif
         </div>
     </div>
 
