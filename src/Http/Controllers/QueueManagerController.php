@@ -2,6 +2,7 @@
 
 namespace LumenQueueManager\Http\Controllers;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use LumenQueueManager\Models\Job;
 use Illuminate\Http\Request;
@@ -24,7 +25,13 @@ class QueueManagerController extends Controller
 
         $currentQueue = $request->input('queue', 'default');
 
+        /** @var LengthAwarePaginator $jobs */
         $jobs = Job::where('queue', $currentQueue)->paginate(config('lumen-queue-manager.itemsPerPage', 10));
+        if($jobs->count() == 0 && $jobs->total() > 0)
+        {
+            $newPage = (int)(($jobs->total()-1) / $jobs->perPage()) + 1;
+            return redirect()->route('queue-manager-index', ['page' => $newPage] + $request->all());
+        }
 
         return view('lumen-queue-manager::queue-manager/index', [
             'jobs' => $jobs,
