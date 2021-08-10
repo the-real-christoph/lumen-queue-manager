@@ -27,6 +27,18 @@
 </form>
 @endif
 <hr/>
+@php($currentTab = $currentTab ?? 'pending')
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {{ $currentTab === 'pending' ? 'active' : '' }}" aria-current="page"
+           href="{{ route('queue-manager-index', ['queue' => $currentQueue]) }}">Pending jobs</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ $currentTab === 'failed' ? 'active' : '' }}" aria-current="page"
+           href="{{ route('queue-manager-failed-index', ['queue' => $currentQueue]) }}">Failed jobs</a>
+    </li>
+</ul>
+<br/>
 {{ $slot }}
 </body>
 </html>

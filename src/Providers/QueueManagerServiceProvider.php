@@ -26,17 +26,35 @@ class QueueManagerServiceProvider extends ServiceProvider
     {
         $router = $this->app['router'];
         $router->get('/queue-manager', [
-            'uses' => 'LumenQueueManager\Http\Controllers\QueueManagerController@index',
+            'uses' => 'LumenQueueManager\Http\Controllers\JobsController@index',
             'as' => 'queue-manager-index'
         ]);
         $router->get('/queue-manager/view/{jobId}', [
-            'uses' => 'LumenQueueManager\Http\Controllers\QueueManagerController@view',
+            'uses' => 'LumenQueueManager\Http\Controllers\JobsController@view',
             'as' => 'queue-manager-view'
         ]);
         $router->get('/queue-manager/delete/{jobId}', [
-            'uses' =>'LumenQueueManager\Http\Controllers\QueueManagerController@delete',
+            'uses' =>'LumenQueueManager\Http\Controllers\JobsController@delete',
             'as' => 'queue-manager-delete'
         ]);
+
+        $router->get('/queue-manager/failed-jobs', [
+            'uses' => 'LumenQueueManager\Http\Controllers\FailedJobsController@index',
+            'as' => 'queue-manager-failed-index'
+        ]);
+        $router->get('/queue-manager/failed-jobs/retry/{jobUuid}', [
+            'uses' => 'LumenQueueManager\Http\Controllers\FailedJobsController@retry',
+            'as' => 'queue-manager-failed-retry'
+        ]);
+        $router->get('/queue-manager/failed-jobs/delete/{jobId}', [
+            'uses' => 'LumenQueueManager\Http\Controllers\FailedJobsController@delete',
+            'as' => 'queue-manager-failed-delete'
+        ]);
+        $router->get('/queue-manager/failed-jobs/view/{jobId}', [
+            'uses' => 'LumenQueueManager\Http\Controllers\FailedJobsController@view',
+            'as' => 'queue-manager-failed-view'
+        ]);
+
 
         Paginator::useBootstrap();
     }

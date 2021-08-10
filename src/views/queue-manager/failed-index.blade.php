@@ -1,4 +1,5 @@
-<x-lumen-queue-manager::layout :queueSelectionOptions="$queueSelectionOptions" :currentQueue="$currentQueue">
+<x-lumen-queue-manager::layout :queueSelectionOptions="$queueSelectionOptions" :currentQueue="$currentQueue"
+                               :currentTab="$currentTab">
     <div class="container">
         @if (isset($message) && $message)
             <div class="alert alert-warning" role="alert">
@@ -16,16 +17,16 @@
                 Name
             </div>
             <div class="col-4">
-                Status
+                Exception message
             </div>
-            <div class="col-1">
-                Attempts
+            <div class="col-2">
+                Failed at
             </div>
             <div class="col">
                 Actions
             </div>
         </div>
-        <?php /** @var \LumenQueueManager\Models\Job $job */ ?>
+        <?php /** @var \LumenQueueManager\Models\FailedJob $job */ ?>
         @foreach ($jobs as $job)
             <hr/>
             <div class="row">
@@ -36,16 +37,20 @@
                     {{ $job->getDisplayName() }}
                 </div>
                 <div class="col-4">
-                    {{ $job->getStatusText() }}
-                </div>
-                <div class="col-1">
-                    {{ $job->attempts }}
-                </div>
-                <div class="col-1">
-                    <a href="{{ route('queue-manager-view', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">View</a>
+                    {{ $job->getExceptionPreviewText() }}
+                    <a href="{{ route('queue-manager-failed-view', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">View
+                        Details</a>
                 </div>
                 <div class="col-2">
-                    <a href="{{ route('queue-manager-delete', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">Delete permanently</a>
+                    {{ $job->failed_at }}
+                </div>
+                <div class="col-1">
+                    <a href="{{ route('queue-manager-failed-retry', ['jobUuid' => $job->uuid, 'queue' => $currentQueue]) }}">Retry
+                        Job</a>
+                </div>
+                <div class="col-2">
+                    <a href="{{ route('queue-manager-failed-delete', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">Delete
+                        permanently</a>
                 </div>
             </div>
         @endforeach

@@ -1,9 +1,10 @@
 <x-lumen-queue-manager::layout :currentQueue="$currentQueue" :currentTab="$currentTab">
     <div class="container">
 
+        <?php /** @var \LumenQueueManager\Models\FailedJob $job */ ?>
         <div class="row">
             <div class="col-2">
-                <a href="{{ route('queue-manager-index', ['queue' => $currentQueue]) }}">Back to overview</a>
+                <a href="{{ route('queue-manager-failed-index', ['queue' => $currentQueue]) }}">Back to overview</a>
             </div>
         </div>
         <div class="row">
@@ -28,6 +29,16 @@
             </div>
             <div class="col">
                 {{ $job->getPayload()['displayName'] }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                Exception:
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <pre>{{ $job->getFullExceptionText() }}</pre>
             </div>
         </div>
         <div class="row">

@@ -2,22 +2,23 @@
 
 namespace LumenQueueManager\Http\Controllers;
 
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
-use LumenQueueManager\Models\Job;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Laravel\Lumen\Routing\Controller;
+use LumenQueueManager\Models\FailedJob;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class QueueManagerController extends Controller
+class FailedJobsController extends Controller
 {
 
     public function index(Request $request)
     {
         $this->checkForDatabaseQueue();
 
-        $queueInfos = Job::select('queue', DB::raw('count(queue) as numberOfJobs'))->groupBy('queue')->get()->toArray();
-        $queueSelectionOptions = [];
+        $queueInfos = FailedJob::select('queue', DB::raw('count(queue) as numberOfJobs'))->groupBy('queue')->get()->toArray();
+        $queueSelectionOptions = ['default' => 'default'];
         foreach($queueInfos as $queueInfo)
         {
             $queueSelectionOptions[$queueInfo['queue']] = $queueInfo['queue'] . ' (' . $queueInfo['numberOfJobs'] . ' items)';
@@ -26,18 +27,19 @@ class QueueManagerController extends Controller
         $currentQueue = $request->input('queue', 'default');
 
         /** @var LengthAwarePaginator $jobs */
-        $jobs = Job::where('queue', $currentQueue)->paginate(config('lumen-queue-manager.itemsPerPage', 10));
+        $jobs = FailedJob::where('queue', $currentQueue)->paginate(config('lumen-queue-manager.itemsPerPage', 10));
         if($jobs->count() == 0 && $jobs->total() > 0)
         {
             $newPage = (int)(($jobs->total()-1) / $jobs->perPage()) + 1;
-            return redirect()->route('queue-manager-index', ['page' => $newPage] + $request->all());
+            return redirect()->route('queue-manager-failed-index', ['page' => $newPage] + $request->all());
         }
 
-        return view('lumen-queue-manager::queue-manager/index', [
+        return view('lumen-queue-manager::queue-manager/failed-index', [
             'jobs' => $jobs,
             'queueSelectionOptions' => $queueSelectionOptions,
             'currentQueue' => $currentQueue,
-            'message' => $request->input('message', '')
+            'message' => $request->input('message', ''),
+            'currentTab' => 'failed'
         ]);
     }
 
@@ -45,8 +47,8 @@ class QueueManagerController extends Controller
         $this->checkForDatabaseQueue();
         $currentQueue = $request->input('queue', 'default');
 
-        /** @var Job $job */
-        $job = Job::whereId($jobId)->first();
+        /** @var FailedJob $job */
+        $job = FailedJob::whereId($jobId)->first();
         if(null === $job)
         {
             return redirect()->route('queue-manager-index', [
@@ -55,9 +57,10 @@ class QueueManagerController extends Controller
             ]);
         }
 
-        return view('lumen-queue-manager::queue-manager/view', [
+        return view('lumen-queue-manager::queue-manager/failed-view', [
             'job' => $job,
             'currentQueue' => $currentQueue,
+            'currentTab' => 'failed'
         ]);
     }
 
@@ -65,11 +68,35 @@ class QueueManagerController extends Controller
     {
         $this->checkForDatabaseQueue();
 
-        Job::whereId($jobId)->delete();
+        FailedJob::whereId($jobId)->delete();
 
         $currentQueue = $request->input('queue', 'default');
-        return redirect()->route('queue-manager-index', [
+        return redirect()->route('queue-manager-failed-index', [
             'queue' => $currentQueue,
+            'message' => 'Job was permanently removed.'
+        ]);
+    }
+
+    public function retry(Request $request, $jobUuid)
+    {
+        $this->checkForDatabaseQueue();
+        $currentQueue = $request->input('queue', 'default');
+
+        $job = FailedJob::whereUuid($jobUuid)->first();
+        if(null === $job)
+        {
+            return redirect()->route('queue-manager-failed-index', [
+                'queue' => $currentQueue,
+                'message' => 'Job cannot be found!'
+            ]);
+        }
+
+        $outputBuffer = null;
+        $result = Artisan::call('queue:retry', ['id' => $jobUuid], $outputBuffer);
+
+        return redirect()->route('queue-manager-failed-index', [
+            'queue' => $currentQueue,
+            'message' => Artisan::output()
         ]);
     }
 
