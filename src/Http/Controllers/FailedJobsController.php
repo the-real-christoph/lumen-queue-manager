@@ -4,10 +4,10 @@ namespace LumenQueueManager\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Laravel\Lumen\Routing\Controller;
 use LumenQueueManager\Models\FailedJob;
+use LumenQueueManager\Models\Job;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FailedJobsController extends Controller
@@ -82,8 +82,9 @@ class FailedJobsController extends Controller
         $this->checkForDatabaseQueue();
         $currentQueue = $request->input('queue', 'default');
 
-        $job = FailedJob::whereUuid($jobUuid)->first();
-        if(null === $job)
+        /** @var FailedJob $failedJob */
+        $failedJob = FailedJob::whereUuid($jobUuid)->first();
+        if(null === $failedJob)
         {
             return redirect()->route('queue-manager-failed-index', [
                 'queue' => $currentQueue,
@@ -91,12 +92,24 @@ class FailedJobsController extends Controller
             ]);
         }
 
-        $outputBuffer = null;
-        $result = Artisan::call('queue:retry', ['id' => $jobUuid], $outputBuffer);
+        $jobData = json_decode($failedJob->payload, true);
+        if(isset($jobData['retryUntil'])) {
+            $jobData['retryUntil'] = null;
+            $infoMessage = "Job had retryUntil attribute, this had to be removed when rescheduling.";
+        }
+
+        $rescheduledJob = Job::create([
+            'queue' => $failedJob->queue,
+            'payload' => json_encode($jobData),
+            'attempts' => 0,
+            'available_at' => time(),
+            'created_at' => time(),
+        ]);
+        $failedJob->delete();
 
         return redirect()->route('queue-manager-failed-index', [
             'queue' => $currentQueue,
-            'message' => Artisan::output()
+            'message' => $infoMessage ?? "Job has been rescheduled."
         ]);
     }
 

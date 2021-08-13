@@ -18,6 +18,8 @@ class Job extends Model
 
     protected $payloadDecoded = null;
 
+    public $timestamps = false;
+
     public function __construct(array $attributes = [])
     {
         $this->table = config('queue-manager.jobs_table', 'jobs');
