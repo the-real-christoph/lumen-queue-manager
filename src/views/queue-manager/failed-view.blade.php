@@ -4,7 +4,7 @@
         <?php /** @var \LumenQueueManager\Models\FailedJob $job */ ?>
         <div class="row">
             <div class="col-2">
-                <a href="{{ route('queue-manager-failed-index', ['queue' => $currentQueue]) }}">Back to overview</a>
+                <a class="btn btn-primary" href="{{ route('queue-manager-failed-index', ['queue' => $currentQueue]) }}">Back to overview</a>
             </div>
         </div>
         <div class="row">

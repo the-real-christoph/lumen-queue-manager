@@ -45,10 +45,12 @@
                     {{ $job->attempts }}
                 </div>
                 <div class="col-1">
-                    <a href="{{ route('queue-manager-view', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">View</a>
+                    <a class="btn btn-primary"
+                       href="{{ route('queue-manager-view', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">View</a>
                 </div>
                 <div class="col-2">
-                    <a href="{{ route('queue-manager-delete', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">Delete permanently</a>
+                    <a class="btn btn-primary btn-danger"
+                       href="{{ route('queue-manager-delete', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">Delete permanently</a>
                 </div>
             </div>
         @endforeach
