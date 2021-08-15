@@ -25,7 +25,10 @@
                 Actions
             </div>
         </div>
-        <?php /** @var \LumenQueueManager\Models\Job $job */ ?>
+        <?php /**
+             * @var \LumenQueueManager\Models\Job $job
+             * @var \Illuminate\Pagination\LengthAwarePaginator $jobs
+             */ ?>
         @foreach ($jobs as $job)
             <hr/>
             <div class="row">
@@ -42,10 +45,10 @@
                     {{ $job->attempts }}
                 </div>
                 <div class="col-1">
-                    <a href="{{ route('queue-manager-view', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">View</a>
+                    <a href="{{ route('queue-manager-view', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">View</a>
                 </div>
                 <div class="col-2">
-                    <a href="{{ route('queue-manager-delete', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">Delete permanently</a>
+                    <a href="{{ route('queue-manager-delete', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">Delete permanently</a>
                 </div>
             </div>
         @endforeach

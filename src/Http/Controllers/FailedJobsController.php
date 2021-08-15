@@ -72,6 +72,7 @@ class FailedJobsController extends Controller
         $currentQueue = $request->input('queue', 'default');
         return redirect()->route('queue-manager-failed-index', [
             'queue' => $currentQueue,
+            'page' => $request->input('page'),
             'message' => 'Job was permanently removed.'
         ]);
     }

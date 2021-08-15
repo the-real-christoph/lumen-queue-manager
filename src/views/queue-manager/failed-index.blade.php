@@ -26,7 +26,10 @@
                 Actions
             </div>
         </div>
-        <?php /** @var \LumenQueueManager\Models\FailedJob $job */ ?>
+        <?php /**
+         * @var \LumenQueueManager\Models\FailedJob $job
+         * @var \Illuminate\Pagination\LengthAwarePaginator $jobs
+         */ ?>
         @foreach ($jobs as $job)
             <hr/>
             <div class="row">
@@ -38,18 +41,18 @@
                 </div>
                 <div class="col-4">
                     {{ $job->getExceptionPreviewText() }}
-                    <a href="{{ route('queue-manager-failed-view', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">View
+                    <a href="{{ route('queue-manager-failed-view', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">View
                         Details</a>
                 </div>
                 <div class="col-2">
                     {{ $job->failed_at }}
                 </div>
                 <div class="col-1">
-                    <a href="{{ route('queue-manager-failed-retry', ['jobUuid' => $job->uuid, 'queue' => $currentQueue]) }}">Retry
+                    <a href="{{ route('queue-manager-failed-retry', ['jobUuid' => $job->uuid, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">Retry
                         Job</a>
                 </div>
                 <div class="col-2">
-                    <a href="{{ route('queue-manager-failed-delete', ['jobId' => $job->id, 'queue' => $currentQueue]) }}">Delete
+                    <a href="{{ route('queue-manager-failed-delete', ['jobId' => $job->id, 'queue' => $currentQueue, 'page' => $jobs->currentPage()]) }}">Delete
                         permanently</a>
                 </div>
             </div>

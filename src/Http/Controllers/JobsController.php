@@ -71,6 +71,7 @@ class JobsController extends Controller
         $currentQueue = $request->input('queue', 'default');
         return redirect()->route('queue-manager-index', [
             'queue' => $currentQueue,
+            'page' => $request->input('page'),
             'message' => "Pending job was deleted permanently."
         ]);
     }
