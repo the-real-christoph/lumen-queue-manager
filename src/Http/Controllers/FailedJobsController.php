@@ -59,6 +59,7 @@ class FailedJobsController extends Controller
         return view('lumen-queue-manager::queue-manager/failed-view', [
             'job' => $job,
             'currentQueue' => $currentQueue,
+            'page' => $request->input('page'),
             'currentTab' => 'failed'
         ]);
     }

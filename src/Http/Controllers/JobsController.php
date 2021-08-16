@@ -58,6 +58,7 @@ class JobsController extends Controller
         return view('lumen-queue-manager::queue-manager/view', [
             'job' => $job,
             'currentQueue' => $currentQueue,
+            'page' => $request->input('page'),
             'currentTab' => 'pending'
         ]);
     }
